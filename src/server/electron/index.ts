@@ -784,6 +784,10 @@ const crashReporter = {
 };
 
 const net = {
+  isOnline(): boolean {
+    // Node has no Chromium network monitor; let transport failures drive retries.
+    return true;
+  },
   async fetch(input: string | URL, init?: RequestInit): Promise<Response> {
     // log("net.fetch", [input, init]);
     if (typeof globalThis.fetch === "function") {
