@@ -1,0 +1,116 @@
+--- a/.vite/build/main-CqEoQDOU.js
++++ b/.vite/build/main-CqEoQDOU.js
+@@ -154120,86 +154120,33 @@
+   let r = n.relative(e, t);
+   return r !== `..` && !r.startsWith(`..${n.sep}`) && !n.isAbsolute(r);
+ }
+-function lYe(e, { signal: t, headers: n }) {
+-  return (
+-    t?.throwIfAborted(),
+-    new Promise((r, i) => {
+-      let a = _.net.request({
+-        url: e,
+-        method: `GET`,
+-        credentials: `omit`,
+-        redirect: `manual`,
+-        referrerPolicy: `no-referrer`,
+-      });
+-      new Headers(n).forEach((e, t) => a.setHeader(t, e));
+-      let o = null,
+-        s = !1,
+-        c = () => t?.removeEventListener(`abort`, u),
+-        l = (e) => {
+-          s || ((s = !0), c(), o?.error(e), i(e), a.abort());
+-        },
+-        u = () => l(new DOMException(`Website preview canceled`, `AbortError`));
+-      (t?.addEventListener(`abort`, u, { once: !0 }),
+-        a.on(`error`, l),
+-        a.on(`redirect`, (e, t, n) => {
+-          if (!s)
+-            try {
+-              let t = new Response(null, {
+-                status: e,
+-                headers: { location: n },
+-              });
+-              ((s = !0), c(), r(t), a.abort());
+-            } catch (e) {
+-              l(Error(`Invalid website preview redirect`, { cause: e }));
+-            }
+-        }),
+-        a.on(`response`, (e) => {
+-          if (!s)
+-            try {
+-              let t = new Headers();
+-              for (let [n, r] of Object.entries(e.headers))
+-                for (let e of Array.isArray(r) ? r : [r]) t.append(n, e);
+-              let n = 0,
+-                i = new ReadableStream({
+-                  start(t) {
+-                    ((o = t),
+-                      e.on(`error`, l),
+-                      e.on(`aborted`, u),
+-                      e.on(`end`, () => {
+-                        s || ((s = !0), c(), t.close());
+-                      }),
+-                      e.on(`data`, (e) => {
+-                        if (!s) {
+-                          if (((n += e.byteLength), n > 2097152)) {
+-                            l(Error(`Website preview response is too large`));
+-                            return;
+-                          }
+-                          t.enqueue(e);
+-                        }
+-                      }));
+-                  },
+-                  cancel() {
+-                    s || ((s = !0), c(), a.abort());
+-                  },
+-                });
+-              if (
+-                e.statusCode === 204 ||
+-                e.statusCode === 205 ||
+-                e.statusCode === 304
+-              ) {
+-                let n = new Response(null, {
+-                  status: e.statusCode,
+-                  headers: t,
+-                });
+-                (i.cancel(), r(n));
+-              } else r(new Response(i, { status: e.statusCode, headers: t }));
+-            } catch (e) {
+-              l(Error(`Invalid website preview response`, { cause: e }));
+-            }
+-        }),
+-        t?.aborted ? u() : a.end());
+-    })
+-  );
++async function lYe(e, { signal: t, headers: n }) {
++  // The web host uses Fetch; Electron ClientRequest is unavailable here.
++  const response = await _.net.fetch(e, {
++    signal: t,
++    headers: n,
++    method: `GET`,
++    credentials: `omit`,
++    redirect: `manual`,
++    referrerPolicy: `no-referrer`,
++  });
++  if (!response.body) return response;
++  let bytes = 0;
++  const body = response.body.pipeThrough(new TransformStream({
++    transform(chunk, controller) {
++      bytes += chunk.byteLength;
++      if (bytes > 2097152) {
++        controller.error(new Error(`Website preview response is too large`));
++        return;
++      }
++      controller.enqueue(chunk);
++    },
++  }));
++  return new Response(body, {
++    status: response.status,
++    statusText: response.statusText,
++    headers: response.headers,
++  });
+ }
+ var uYe = class {
+   settings;

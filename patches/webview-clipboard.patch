@@ -1,0 +1,30 @@
+--- a/webview/assets/app-shared-8bd9d0399038.js
++++ b/webview/assets/app-shared-8bd9d0399038.js
+@@ -310873,7 +310873,7 @@
+       t?.target?.ownerDocument?.defaultView ?? window,
+     a = i.hasFocus(),
+     o = typeof e == `string` || e instanceof Promise;
+-  if (!o && !r?.clipboard)
++  if (!r?.clipboard)
+     return (
+       zf.warning(`Clipboard API unavailable`, {
+         safe: { hadFocus: a, visibilityState: i.visibilityState },
+@@ -310895,16 +310895,8 @@
+     c;
+   try {
+     if (o) {
+-      let { appServices: t } = await Wf(
+-          async () => {
+-            let { appServices: e } = await import(`./rpc-f6f57972be0d.js`);
+-            return { appServices: e };
+-          },
+-          [],
+-          import.meta.url,
+-        ),
+-        n = typeof e == `string` ? e : await e;
+-      c = Promise.resolve(t.clipboard.writeText(n));
++      // Copy on the client: the web host has no access to the user's clipboard.
++      c = r.clipboard.writeText(typeof e == `string` ? e : await e);
+     } else if (e instanceof Promise) {
+       if (`write` in r.clipboard && typeof ClipboardItem < `u`) {
+         let t = e.then((e) => new Blob([e], { type: `text/plain` }));
