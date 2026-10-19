@@ -785,7 +785,8 @@ const crashReporter = {
 
 const net = {
   isOnline(): boolean {
-    // Node has no Chromium network monitor; let transport failures drive retries.
+    // There is no Chromium network monitor in the headless host. Let transports
+    // attempt reconnects and determine connectivity from their own results.
     return true;
   },
   async fetch(input: string | URL, init?: RequestInit): Promise<Response> {
