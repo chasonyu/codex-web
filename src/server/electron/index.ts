@@ -88,6 +88,10 @@ function createDeepStub(pathLabel: string): StubFunction {
       return {};
     },
     get(_target, prop) {
+      // Desktop macOS initialization binds stubbed Dock methods before calling them.
+      if (prop === "bind" || prop === "call" || prop === "apply") {
+        return Reflect.get(_target, prop);
+      }
       if (prop === "then") {
         return undefined;
       }
