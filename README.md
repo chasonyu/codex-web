@@ -79,6 +79,11 @@ nix shell github:0xcaff/codex-web github:0xcaff/codex-web#codex_remote_proxy -c 
 program to use; when run directly in a terminal it will wait for protocol input
 rather than opening an interactive prompt.
 
+## deployment notes
+
+See [macOS / Linux deployment and proxy notes](DEPLOYMENT.md) for PM2,
+proxy environment loading, UI feature-gate troubleshooting, and Nginx setup.
+
 ## security
 
 run `codex-web` only on trusted networks. treat anyone who can reach the
