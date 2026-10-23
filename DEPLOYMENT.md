@@ -105,3 +105,7 @@ location / {
 这只是代理片段；TLS 证书、server_name 和认证应在完整 server 配置中设置。自签名证书需由访问设备信任。先运行 nginx -t，再 reload。排查 DNS 拦截时可用 curl --resolve 配合正确的 Host/SNI 和证书验证访问目标，避免向错误解析地址发送登录凭据。
 
 macOS 的用户 LaunchAgent（RunAtLoad）和用户级 brew services 通常在该用户登录后启动，不能描述成“无人登录也会开机启动”。PM2 的恢复入口使用固定 Node 路径执行 pm2 resurrect；配置修改后执行 pm2 save，并检查已加载的 LaunchAgent 与保存清单。若需要无人登录启动，需另行配置系统级服务。
+
+## macOS Computer Use
+
+See [Computer Use deployment notes](COMPUTER_USE.md) for the native helper, MCP setup, permissions, and validation boundaries.
